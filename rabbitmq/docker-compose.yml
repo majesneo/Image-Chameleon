@@ -1,0 +1,48 @@
+version: '3.3'
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8.9-management-alpine
+    tty: true
+    env_file:
+      - ./.env
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
+    networks:
+      - rabbitmq-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  image-compression:
+    build: ../image-compression
+    container_name: image-compression
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+    ports:
+      - "3000:3000"
+
+  image-resolution-conversion:
+    build: ../image-resolution-conversion
+    container_name: image-resolution-conversion
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+    ports:
+      - "3001:3001"
+
+networks:
+  rabbitmq-network:
+    driver: bridge
