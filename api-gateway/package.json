@@ -2,14 +2,14 @@
   "name": "api-gateway",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "levtypets <levtypets@gmail.com>",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "api-gateway:dev": "NODE_ENV=development nest start --watch",
+    "gateway:dev": "NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -29,7 +29,8 @@
     "amqplib": "^0.6.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "shared-rabbitmq-module": "file:../libs/shared-rabbitmq-module"
+    "shared-rabbitmq-module": "file:../libs/shared-rabbitmq-module",
+    "event-module": "file:../libs/event-module"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

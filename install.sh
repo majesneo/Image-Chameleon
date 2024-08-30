@@ -4,7 +4,16 @@ printf '\nDependency shared-rabbitmq-module installation started...\n'
 cd ./libs/shared-rabbitmq-module
 rm -rf node_modules
 yarn install
+printf '\nBuild shared-rabbitmq-module started...\n'
 yarn shared-rabbitmq:build
+cd ../../
+
+printf '\nDependency event-module installation started...\n'
+cd ./libs/event-module
+rm -rf node_modules
+yarn install
+printf '\nBuild event-module started...\n'
+yarn event-module:build
 cd ../../
 
 printf '\nDependency api-gateway installation started...\n'

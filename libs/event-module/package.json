@@ -1,0 +1,20 @@
+{
+  "name": "event-module",
+  "version": "1.0.0",
+  "description": "Shared event module for microservices",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "event-module:build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@nestjs/common": "^10.0.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0"
+  },
+  "author": "levtypets <levtypets@gmail.com>",
+  "license": "ISC"
+}

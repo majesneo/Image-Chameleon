@@ -1,17 +1,24 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import * as console from 'node:console';
 import { RabbitMQService } from 'shared-rabbitmq-module';
+import { ConfigService } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
+import { EventTypes } from 'event-module';
 
 @Controller()
-export class AppController {
-  constructor(private readonly rabbitMQService: RabbitMQService) {}
-
-  @Post('resolutionGateway')
-  async resolutionGateway(@Body() dto: { message: string }): Promise<void> {
+export class AppController extends RabbitMQService {
+  constructor(configService: ConfigService, reflector: Reflector) {
+    super(configService, reflector);
+  }
+  @Post('imageCompression')
+  async sendEvent(@Body() dto: { message: string }): Promise<void> {
     try {
-      await this.rabbitMQService.publishToExchange(dto.message);
+      console.log('send imageCompression');
+      await this.publishToExchange({
+        type: EventTypes.IMAGE_COMPRESSION,
+        payload: 'test payload imageCompression',
+      });
     } catch (error) {
-      console.error('Failed to publish message:', error);
+      console.error('Failed to send event:', error);
     }
   }
 }

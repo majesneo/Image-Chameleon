@@ -1,0 +1,69 @@
+{
+  "installation": {
+    "version": "19.6.4",
+    "plugins": {
+      "@nx/eslint": "19.6.4"
+    }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "shared-rabbitmq:build": {
+      "dependsOn": [
+        "^shared-rabbitmq:build"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": true
+    },
+    "format": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "test": {
+      "dependsOn": [
+        "^test"
+      ],
+      "cache": true
+    },
+    "start": {
+      "dependsOn": [
+        "^start"
+      ]
+    },
+    "api-gateway:dev": {
+      "dependsOn": [
+        "^api-gateway:dev"
+      ]
+    }
+  },
+  "defaultBase": "main",
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "eslint:lint"
+      }
+    },
+    {
+      "plugin": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      }
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "startTargetName": "next:start",
+        "buildTargetName": "next:build",
+        "devTargetName": "next:dev",
+        "serveStaticTargetName": "serve-static"
+      }
+    }
+  ],
+  "nxCloudAccessToken": "MDI4NGJiMTYtODMxMC00ZTYyLTg1MTMtMmU1ZTM1ODhjYmNkfHJlYWQtd3JpdGU="
+}

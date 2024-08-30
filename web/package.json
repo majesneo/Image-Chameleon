@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
-    "build": "next build",
-    "start": "next start",
+    "dev": "nx next:dev --turbo",
+    "build": "nx next:build",
+    "start": "nx next:start",
     "lint": "next lint"
   },
   "dependencies": {

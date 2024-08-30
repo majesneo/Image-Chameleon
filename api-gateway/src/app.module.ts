@@ -10,9 +10,8 @@ import { SharedRabbitMQModule } from 'shared-rabbitmq-module';
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env',
     }),
-    SharedRabbitMQModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, SharedRabbitMQModule],
 })
 export class AppModule {}
