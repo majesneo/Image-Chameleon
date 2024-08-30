@@ -6,6 +6,11 @@
   "repository": "https://github.com/majesneo/image-chameleon.git",
   "author": "levtypets <levtypets@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "gateway:dev": "yarn workspace api-gateway run gateway:dev",
+    "image-compression:dev": "yarn workspace image-compression run image-compression:dev",
+    "image-resolution:dev": "yarn workspace image-resolution-conversion run image-resolution:dev"
+  },
   "workspaces": [
     "api-gateway",
     "image-compression",
@@ -19,7 +24,7 @@
     "@nx/next": "19.6.4",
     "eslint": "~8.57.0",
     "jest": "^29.7.0",
-    "nx": "19.6.4",
+    "nx": "^19.6.4",
     "typescript": "^5.5.4"
   },
   "dependencies": {

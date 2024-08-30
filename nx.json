@@ -1,69 +1,61 @@
 {
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "installation": {
     "version": "19.6.4",
     "plugins": {
       "@nx/eslint": "19.6.4"
     }
   },
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
-    "shared-rabbitmq:build": {
-      "dependsOn": [
-        "^shared-rabbitmq:build"
-      ]
-    },
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "cache": true
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     },
-    "format": {
-      "cache": true
-    },
-    "lint": {
-      "cache": true
-    },
-    "test": {
-      "dependsOn": [
-        "^test"
-      ],
-      "cache": true
-    },
-    "start": {
-      "dependsOn": [
-        "^start"
-      ]
-    },
-    "api-gateway:dev": {
-      "dependsOn": [
-        "^api-gateway:dev"
-      ]
+    "dev": {
+      "dependsOn": ["^dev"],
+      "cache": false
     }
   },
-  "defaultBase": "main",
-  "plugins": [
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "eslint:lint"
+  "projects": {
+    "api-gateway": {
+      "root": "api-gateway",
+      "sourceRoot": "api-gateway/src",
+      "projectType": "application",
+      "targets": {
+        "dev": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace api-gateway run dev"
+          }
+        }
       }
     },
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
+    "image-compression": {
+      "root": "image-compression",
+      "sourceRoot": "image-compression/src",
+      "projectType": "application",
+      "targets": {
+        "dev": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace image-compression run dev"
+          }
+        }
       }
     },
-    {
-      "plugin": "@nx/next/plugin",
-      "options": {
-        "startTargetName": "next:start",
-        "buildTargetName": "next:build",
-        "devTargetName": "next:dev",
-        "serveStaticTargetName": "serve-static"
+    "image-resolution-conversion": {
+      "root": "image-resolution-conversion",
+      "sourceRoot": "image-resolution-conversion/src",
+      "projectType": "application",
+      "targets": {
+        "dev": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace image-resolution-conversion run dev"
+          }
+        }
       }
     }
-  ],
-  "nxCloudAccessToken": "MDI4NGJiMTYtODMxMC00ZTYyLTg1MTMtMmU1ZTM1ODhjYmNkfHJlYWQtd3JpdGU="
+  },
+  "defaultBase": "main"
 }
