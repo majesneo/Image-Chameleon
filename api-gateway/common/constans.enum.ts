@@ -1,3 +1,0 @@
-export enum SERVICE_NAME {
-  API_GATEWAY = 'API_GATEWAY',
-}

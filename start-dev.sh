@@ -15,6 +15,7 @@ kill_port 3000
 kill_port 3001
 kill_port 3002
 kill_port 3003
+kill_port 3004
 
 
 if [ "$(docker ps -q -f name=rabbitmq)" ]; then
@@ -27,6 +28,9 @@ fi
 yarn workspace api-gateway run dev > api-gateway.log 2>&1 &
 echo "Api-gateway is running..."
 
+yarn workspace file-upload run dev > file-upload.log 2>&1 &
+echo "File-upload is running..."
+
 yarn workspace image-compression run dev > image-compression.log 2>&1 &
 echo "Image-compression is running..."
 
@@ -38,6 +42,6 @@ echo "Web is running..."
 
 sleep 5
 
-tail -f api-gateway.log image-compression.log image-resolution-conversion.log web.log
+tail -f api-gateway.log file-upload.log image-compression.log image-resolution-conversion.log web.log
 
 wait

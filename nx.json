@@ -79,6 +79,46 @@
         "event-module"
       ]
     },
+    "file-upload": {
+      "root": "file-upload",
+      "sourceRoot": "file-upload/src",
+      "projectType": "application",
+      "targets": {
+        "setup": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace file-upload run setup",
+            "cwd": "file-upload"
+          },
+          "dependsOn": [
+            "^setup"
+          ]
+        },
+        "install:clean": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace file-upload run install:clean",
+            "cwd": "file-upload"
+          }
+        },
+        "build": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace file-upload run build"
+          }
+        },
+        "dev": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace file-upload run dev"
+          }
+        }
+      },
+      "implicitDependencies": [
+        "shared-rabbitmq-module",
+        "event-module"
+      ]
+    },
     "image-compression": {
       "root": "image-compression",
       "sourceRoot": "image-compression/src",

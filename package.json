@@ -13,6 +13,7 @@
   },
   "workspaces": [
     "api-gateway",
+    "file-upload",
     "image-compression",
     "image-resolution-conversion",
     "libs/*",
