@@ -7,8 +7,8 @@
   "author": "levtypets <levtypets@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "gateway:dev": "yarn workspace api-gateway run gateway:dev",
-    "image-compression:dev": "yarn workspace image-compression run image-compression:dev",
+    "setup": "nx run-many --target=setup --all",
+    "start-dev": "/bin/bash /Users/levarshavin/image-chameleon/start-dev.sh",
     "image-resolution:dev": "yarn workspace image-resolution-conversion run image-resolution:dev"
   },
   "workspaces": [

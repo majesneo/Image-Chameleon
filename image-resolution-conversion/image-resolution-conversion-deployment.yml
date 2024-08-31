@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-resolution-conversion
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: image-resolution-conversion
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: image-resolution-conversion
+    spec:
+      containers:
+        - name: image-resolution-conversion
+          image: majesneo/image-resolution-conversion:latest
+          ports:
+            - containerPort: 3002
+          env:
+            - name: RABBITMQ_URL
+              value: amqp://rabbitmq:5672

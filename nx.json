@@ -9,10 +9,21 @@
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/dist"]
     },
     "dev": {
       "dependsOn": ["^dev"],
+      "cache": false
+    },
+    "install": {
+      "cache": false
+    },
+    "install:clean": {
+      "cache": false
+    },
+    "setup": {
+      "dependsOn": ["^setup"],
       "cache": false
     }
   },
@@ -22,36 +33,156 @@
       "sourceRoot": "api-gateway/src",
       "projectType": "application",
       "targets": {
+        "setup": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace api-gateway run setup",
+            "cwd": "api-gateway"
+          },
+          "dependsOn": ["^setup"]
+        },
+        "install:clean": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace api-gateway run install:clean",
+            "cwd": "api-gateway"
+          }
+        },
+        "build": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace api-gateway run build"
+          }
+        },
         "dev": {
           "executor": "nx:run-commands",
           "options": {
             "command": "yarn workspace api-gateway run dev"
           }
         }
-      }
+      },
+      "implicitDependencies": ["shared-rabbitmq-module", "event-module"]
     },
     "image-compression": {
       "root": "image-compression",
       "sourceRoot": "image-compression/src",
       "projectType": "application",
       "targets": {
+        "setup": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace image-compression run setup",
+            "cwd": "image-compression"
+          },
+          "dependsOn": ["^setup"]
+        },
+        "install:clean": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace image-compression run install:clean",
+            "cwd": "image-compression"
+          }
+        },
+        "build": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace image-compression run build"
+          }
+        },
         "dev": {
           "executor": "nx:run-commands",
           "options": {
             "command": "yarn workspace image-compression run dev"
           }
         }
-      }
+      },
+      "implicitDependencies": ["shared-rabbitmq-module", "event-module"]
     },
     "image-resolution-conversion": {
       "root": "image-resolution-conversion",
       "sourceRoot": "image-resolution-conversion/src",
       "projectType": "application",
       "targets": {
+        "setup": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace image-resolution-conversion run setup",
+            "cwd": "image-resolution-conversion"
+          },
+          "dependsOn": ["^setup"]
+        },
+        "install:clean": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace image-resolution-conversion run install:clean",
+            "cwd": "image-resolution-conversion"
+          }
+        },
+        "build": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace image-resolution-conversion run build"
+          }
+        },
         "dev": {
           "executor": "nx:run-commands",
           "options": {
             "command": "yarn workspace image-resolution-conversion run dev"
+          }
+        }
+      },
+      "implicitDependencies": ["shared-rabbitmq-module", "event-module"]
+    },
+    "event-module": {
+      "root": "libs/event-module",
+      "sourceRoot": "libs/event-module/src",
+      "projectType": "library",
+      "targets": {
+        "setup": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn run setup",
+            "cwd": "libs/event-module"
+          }
+        },
+        "install:clean": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn run install:clean",
+            "cwd": "libs/event-module"
+          }
+        },
+        "build": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace event-module run event-module:build"
+          }
+        }
+      }
+    },
+    "shared-rabbitmq-module": {
+      "root": "libs/shared-rabbitmq-module",
+      "sourceRoot": "libs/shared-rabbitmq-module/src",
+      "projectType": "library",
+      "targets": {
+        "setup": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn run setup",
+            "cwd": "libs/shared-rabbitmq-module"
+          }
+        },
+        "install:clean": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn run install:clean",
+            "cwd": "libs/shared-rabbitmq-module"
+          }
+        },
+        "build": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "yarn workspace shared-rabbitmq-module run shared-rabbitmq:build"
           }
         }
       }

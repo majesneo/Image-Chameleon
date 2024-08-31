@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nx next:dev --turbo",
-    "build": "nx next:build",
-    "start": "nx next:start",
-    "lint": "next lint"
+    "dev": "nx run web:dev",
+    "build": "nx run web:build",
+    "start": "nx run web:serve",
+    "lint": "nx run web:lint"
   },
   "dependencies": {
     "react": "^18",
