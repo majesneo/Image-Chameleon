@@ -1,5 +1,22 @@
 #!/bin/bash
 
+kill_port() {
+  local port=$1
+  local pid
+  pid=$(lsof -t -i:"$port")
+
+  if [ -n "$pid" ]; then
+    echo "Killing process on port $port with PID $pid..."
+    kill -9 "$pid"
+  fi
+}
+
+kill_port 3000
+kill_port 3001
+kill_port 3002
+kill_port 3003
+
+
 if [ "$(docker ps -q -f name=rabbitmq)" ]; then
     echo "RabbitMQ container is already running."
 else
@@ -16,8 +33,11 @@ echo "Image-compression is running..."
 yarn workspace image-resolution-conversion run dev > image-resolution-conversion.log 2>&1 &
 echo "Image-resolution-conversion is running..."
 
+yarn workspace web run dev > web.log 2>&1 &
+echo "Web is running..."
+
 sleep 5
 
-tail -f api-gateway.log image-compression.log image-resolution-conversion.log
+tail -f api-gateway.log image-compression.log image-resolution-conversion.log web.log
 
 wait

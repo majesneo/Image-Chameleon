@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nx run web:dev",
+    "dev": "next dev",
     "build": "nx run web:build",
-    "start": "nx run web:serve",
-    "lint": "nx run web:lint"
+    "start": "nx run web:start",
+    "lint": "nx run web:lint",
+    "install:clean": "rm -rf node_modules && yarn install"
   },
   "dependencies": {
     "react": "^18",

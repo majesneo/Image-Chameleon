@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "setup": "nx run-many --target=setup --all",
-    "start-dev": "/bin/bash /Users/levarshavin/image-chameleon/start-dev.sh",
+    "dev": "/bin/bash /Users/levarshavin/image-chameleon/start-dev.sh",
     "image-resolution:dev": "yarn workspace image-resolution-conversion run image-resolution:dev"
   },
   "workspaces": [

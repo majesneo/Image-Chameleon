@@ -8,12 +8,21 @@
   },
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "outputs": ["{projectRoot}/dist"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ],
+      "outputs": [
+        "{projectRoot}/dist"
+      ]
     },
     "dev": {
-      "dependsOn": ["^dev"],
+      "dependsOn": [
+        "^dev"
+      ],
       "cache": false
     },
     "install": {
@@ -23,7 +32,9 @@
       "cache": false
     },
     "setup": {
-      "dependsOn": ["^setup"],
+      "dependsOn": [
+        "^setup"
+      ],
       "cache": false
     }
   },
@@ -39,7 +50,9 @@
             "command": "yarn workspace api-gateway run setup",
             "cwd": "api-gateway"
           },
-          "dependsOn": ["^setup"]
+          "dependsOn": [
+            "^setup"
+          ]
         },
         "install:clean": {
           "executor": "nx:run-commands",
@@ -61,7 +74,10 @@
           }
         }
       },
-      "implicitDependencies": ["shared-rabbitmq-module", "event-module"]
+      "implicitDependencies": [
+        "shared-rabbitmq-module",
+        "event-module"
+      ]
     },
     "image-compression": {
       "root": "image-compression",
@@ -74,7 +90,9 @@
             "command": "yarn workspace image-compression run setup",
             "cwd": "image-compression"
           },
-          "dependsOn": ["^setup"]
+          "dependsOn": [
+            "^setup"
+          ]
         },
         "install:clean": {
           "executor": "nx:run-commands",
@@ -96,7 +114,10 @@
           }
         }
       },
-      "implicitDependencies": ["shared-rabbitmq-module", "event-module"]
+      "implicitDependencies": [
+        "shared-rabbitmq-module",
+        "event-module"
+      ]
     },
     "image-resolution-conversion": {
       "root": "image-resolution-conversion",
@@ -109,7 +130,9 @@
             "command": "yarn workspace image-resolution-conversion run setup",
             "cwd": "image-resolution-conversion"
           },
-          "dependsOn": ["^setup"]
+          "dependsOn": [
+            "^setup"
+          ]
         },
         "install:clean": {
           "executor": "nx:run-commands",
@@ -131,7 +154,44 @@
           }
         }
       },
-      "implicitDependencies": ["shared-rabbitmq-module", "event-module"]
+      "implicitDependencies": [
+        "shared-rabbitmq-module",
+        "event-module"
+      ]
+    },
+    "web": {
+      "root": "web",
+      "projectType": "application",
+      "targets": {
+        "dev": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "web:build",
+            "dev": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/next:build",
+          "options": {
+            "outputPath": "dist/apps/web"
+          }
+        },
+        "start": {
+          "executor": "@nrwl/next:start",
+          "options": {
+            "buildTarget": "web:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "web/**/*.ts",
+              "web/**/*.tsx"
+            ]
+          }
+        }
+      }
     },
     "event-module": {
       "root": "libs/event-module",
