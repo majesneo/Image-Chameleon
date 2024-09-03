@@ -81,6 +81,7 @@
 
 html,
 body {
+  margin: 0;
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -104,4 +105,67 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+
+.content:before {
+  left: 0;
+  top: 0;
+  background-position: -200px 0;
+  content: "";
+  position: absolute;
+  width: 700px;
+  height: 699px;
+  background-image: url('./rounded-triangle-shape-left.svg');
+  background-size: 700px 699px;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.content:after {
+  right: 0;
+  top: 36vh;
+  background-position: -200px;
+  transform: scaleX(-1);
+  content: "";
+  position: absolute;
+  width: 700px;
+  height: 699px;
+  background-image: url('./rounded-triangle-shape-left.svg');
+  background-size: 700px 699px;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+@keyframes shrink1 {
+  0%,20% {
+    font-variation-settings: "wght" 900;
+    letter-spacing: inherit
+  }
+
+  40%,60% {
+    font-variation-settings: "wght" 200;
+    letter-spacing: -.3rem
+  }
+
+  to {
+    font-variation-settings: "wght" 900;
+    letter-spacing: inherit
+  }
+}
+
+.content-title{
+  display: block;
+  font-variation-settings: "wght" 900;
+  animation: 2s cubic-bezier(0.215, 0.61, 0.355, 1) 1s shrink1 3 forwards;
+}
+
+::selection {
+  background-color: #52c41a;
+  color: white;
+}
+
+::-moz-selection {
+  background-color: #52c41a;
+  color: white;
 }

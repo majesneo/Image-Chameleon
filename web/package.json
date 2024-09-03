@@ -4,22 +4,26 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "nx run web:build",
-    "start": "nx run web:start",
-    "lint": "nx run web:lint",
-    "install:clean": "rm -rf node_modules && yarn install"
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.21.1",
+    "@ant-design/nextjs-registry": "^1.0.1",
+    "antd": "^5.20.3",
+    "antd-style": "^3.6.2",
+    "browser-image-compression": "^2.0.2",
+    "next": "14.2.7",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.6"
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.6"
+    "eslint-config-next": "14.2.7",
+    "typescript": "^5"
   }
 }
