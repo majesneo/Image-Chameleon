@@ -25,15 +25,15 @@
       ],
       "cache": false
     },
-    "install": {
-      "cache": false
-    },
-    "install:clean": {
-      "cache": false
-    },
-    "setup": {
+    "install:dev": {
       "dependsOn": [
-        "^setup"
+        "^install:dev"
+      ],
+      "cache": false
+    },
+    "install:all": {
+      "dependsOn": [
+        "^install:all"
       ],
       "cache": false
     }
@@ -44,22 +44,25 @@
       "sourceRoot": "api-gateway/src",
       "projectType": "application",
       "targets": {
-        "setup": {
+        "install:dev": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace api-gateway run setup",
+            "command": "yarn workspace api-gateway run install:dev",
             "cwd": "api-gateway"
           },
           "dependsOn": [
-            "^setup"
+            "^install:dev"
           ]
         },
-        "install:clean": {
+        "install:all": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace api-gateway run install:clean",
+            "command": "yarn workspace api-gateway run install:all",
             "cwd": "api-gateway"
-          }
+          },
+          "dependsOn": [
+            "^install:all"
+          ]
         },
         "build": {
           "executor": "nx:run-commands",
@@ -84,22 +87,25 @@
       "sourceRoot": "file-upload/src",
       "projectType": "application",
       "targets": {
-        "setup": {
+        "install:dev": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace file-upload run setup",
+            "command": "yarn workspace file-upload run install:dev",
             "cwd": "file-upload"
           },
           "dependsOn": [
-            "^setup"
+            "^install:dev"
           ]
         },
-        "install:clean": {
+        "install:all": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace file-upload run install:clean",
+            "command": "yarn workspace file-upload run install:all",
             "cwd": "file-upload"
-          }
+          },
+          "dependsOn": [
+            "^install:all"
+          ]
         },
         "build": {
           "executor": "nx:run-commands",
@@ -124,22 +130,25 @@
       "sourceRoot": "image-compression/src",
       "projectType": "application",
       "targets": {
-        "setup": {
+        "install:dev": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace image-compression run setup",
+            "command": "yarn workspace image-compression run install:dev",
             "cwd": "image-compression"
           },
           "dependsOn": [
-            "^setup"
+            "^install:dev"
           ]
         },
-        "install:clean": {
+        "install:all": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace image-compression run install:clean",
+            "command": "yarn workspace image-compression run install:all",
             "cwd": "image-compression"
-          }
+          },
+          "dependsOn": [
+            "^install:all"
+          ]
         },
         "build": {
           "executor": "nx:run-commands",
@@ -164,22 +173,25 @@
       "sourceRoot": "image-resolution-conversion/src",
       "projectType": "application",
       "targets": {
-        "setup": {
+        "install:dev": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace image-resolution-conversion run setup",
+            "command": "yarn workspace image-resolution-conversion run install:dev",
             "cwd": "image-resolution-conversion"
           },
           "dependsOn": [
-            "^setup"
+            "^install:dev"
           ]
         },
-        "install:clean": {
+        "install:all": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace image-resolution-conversion run install:clean",
+            "command": "yarn workspace image-resolution-conversion run install:all",
             "cwd": "image-resolution-conversion"
-          }
+          },
+          "dependsOn": [
+            "^install:all"
+          ]
         },
         "build": {
           "executor": "nx:run-commands",
@@ -238,17 +250,17 @@
       "sourceRoot": "libs/event-module/src",
       "projectType": "library",
       "targets": {
-        "setup": {
+        "install:dev": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn run setup",
+            "command": "yarn run install:dev",
             "cwd": "libs/event-module"
           }
         },
-        "install:clean": {
+        "install:all": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn run install:clean",
+            "command": "yarn run install:all",
             "cwd": "libs/event-module"
           }
         },
@@ -265,17 +277,17 @@
       "sourceRoot": "libs/shared-rabbitmq-module/src",
       "projectType": "library",
       "targets": {
-        "setup": {
+        "install:dev": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn run setup",
+            "command": "yarn run install:dev",
             "cwd": "libs/shared-rabbitmq-module"
           }
         },
-        "install:clean": {
+        "install:all": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn run install:clean",
+            "command": "yarn run install:all",
             "cwd": "libs/shared-rabbitmq-module"
           }
         },

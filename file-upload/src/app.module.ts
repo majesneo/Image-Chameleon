@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { FileUploadController } from './app.controller';
+import { UploadService } from './app.service';
 import { SharedRabbitMQModule } from 'shared-rabbitmq-module';
 import { ConfigModule } from '@nestjs/config';
+import { UPLOAD_SERVICE } from './constants';
 
 @Module({
   imports: [
@@ -10,8 +11,13 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env',
     }),
+
   ],
-  controllers: [AppController],
-  providers: [AppService, SharedRabbitMQModule],
+  controllers: [FileUploadController],
+  providers: [SharedRabbitMQModule,  {
+    provide: UPLOAD_SERVICE,
+    useClass: UploadService,
+  },],
 })
-export class AppModule {}
+export class FileUploadModule {
+}

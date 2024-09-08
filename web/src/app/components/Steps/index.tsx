@@ -34,7 +34,8 @@ const StepsWrapper: FC<{ steps: Step[] }> = ({ steps }) => {
     border: `1px dashed ${token.colorBorder}`,
     marginTop: 16,
     width: '100%',
-    padding: '1rem'
+    padding: '1rem',
+    height: 446
   };
 
   return (

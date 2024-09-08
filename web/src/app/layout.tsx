@@ -8,6 +8,8 @@ import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import theme from '@/app/themeConfig';
 import { Head } from '@/app/Head';
+import { Provider } from 'react-redux';
+import { appStore } from '@/app/store';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -21,13 +23,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <Head />
       <body style={{ minWidth: '100vw' }}>
         <AntdRegistry>
-          <ConfigProvider theme={theme}>
-            <Layout style={layoutStyle}>
-              <Header />
-              <main style={{ minWidth: '100vw' }}>{children}</main>
-              <Footer />
-            </Layout>
-          </ConfigProvider>
+          <Provider store={appStore}>
+            <ConfigProvider theme={theme}>
+              <Layout style={layoutStyle}>
+                <Header />
+                <main style={{ minWidth: '100vw' }}>{children}</main>
+                <Footer />
+              </Layout>
+            </ConfigProvider>
+          </Provider>
         </AntdRegistry>
       </body>
     </html>

@@ -1,7 +1,9 @@
 {
-  "name": "event-module",
+  "name": "dto",
   "version": "1.0.0",
-  "description": "Shared event module for microservices",
+  "description": "Shared dto",
+  "license": "MIT",
+  "author": "levtypets <levtypets@gmail.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -11,11 +13,7 @@
   },
   "devDependencies": {
     "typescript": "^5.0.0",
-    "@nestjs/common": "^10.0.0"
-  },
-  "peerDependencies": {
-    "@nestjs/common": "^10.0.0"
-  },
-  "author": "levtypets <levtypets@gmail.com>",
-  "license": "ISC"
+    "class-validator": "^0.14.1",
+    "class-transformer": "^0.5.1"
+  }
 }

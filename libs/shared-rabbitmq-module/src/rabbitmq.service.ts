@@ -12,7 +12,7 @@ interface Event<P> {
 @Injectable()
 export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
   private connection: amqplib.Connection | undefined;
-  private channel: amqplib.Channel | undefined;
+  protected channel: amqplib.Channel | undefined;
   private exchange = 'processing_exchange';
   private exchangeType = 'direct';
   private queue = '';
@@ -20,7 +20,8 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly configService: ConfigService,
     private readonly reflector: Reflector,
-  ) {}
+  ) {
+  }
 
   async onModuleInit(): Promise<void> {
     if (!this.connection || !this.channel) {
@@ -41,10 +42,31 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
     console.log('Connected to RabbitMQ');
   }
 
-  async publishToExchange<P>(event: Event<P>): Promise<void> {
-    const message = JSON.stringify(event);
-    this.channel?.publish(this.exchange, '', Buffer.from(message));
-    console.log(`Message published to exchange ${this.exchange}`);
+  generateCorrelationId(): string {
+    return Math.random().toString() + Math.random().toString() + Math.random().toString();
+  }
+
+  async publishToExchange<P>(event: Event<P>): Promise<string> {
+    const correlationId = this.generateCorrelationId();
+    const replyQueue = await this.channel!.assertQueue('', { exclusive: true }); // Временная очередь для ответа
+
+    return new Promise((resolve, reject) => {
+      this.channel!.consume(
+        replyQueue.queue,
+        (msg) => {
+          if (msg?.properties.correlationId === correlationId) {
+            resolve(msg.content.toString());
+          }
+        },
+        { noAck: true },
+      );
+
+      const message = JSON.stringify(event);
+      this.channel?.publish(this.exchange, '', Buffer.from(message), {
+        correlationId,
+        replyTo: replyQueue.queue,
+      });
+    });
   }
 
   async setupConsumer(): Promise<void> {
@@ -62,7 +84,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
         if (msg !== null) {
           const content = msg.content.toString();
           const event: Event<any> = JSON.parse(content);
-          this.onMessageReceived(event);
+          this.onMessageReceived(event, msg);
           this.channel!.ack(msg);
         }
       },
@@ -70,7 +92,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
     );
   }
 
-  onMessageReceived<P>(event: Event<P>): void {
+  onMessageReceived<P>(event: Event<P>, msg: amqplib.Message): void {
     const prototype = Object.getPrototypeOf(this);
 
     const allMethods = Object.getOwnPropertyNames(prototype) as (keyof this)[];
@@ -83,7 +105,9 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
       const eventType = this.reflector.get<EventTypes>('eventType', this[handler as keyof this] as Function) as EventTypes | undefined;
       if (eventType === event.type) {
         console.log(`Invoking handler ${handler.toString()} for event type ${event.type}`);
-        (this[handler as keyof this] as Function).call(this, event.payload);
+        const replyTo = msg.properties.replyTo;
+        const correlationId = msg.properties.correlationId;
+        (this[handler as keyof this] as Function).call(this, event.payload, replyTo, correlationId);
         return;
       }
     }

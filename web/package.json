@@ -3,20 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_ENV=development next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "install:all": "sudo rm -rf node_modules && sudo yarn install",
+    "install:dev": "sudo rm -rf node_modules/event-module node_modules/dto && sudo yarn install"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.21.1",
     "@ant-design/nextjs-registry": "^1.0.1",
+    "@reduxjs/toolkit": "^1.9.3",
     "antd": "^5.20.3",
     "antd-style": "^3.6.2",
     "browser-image-compression": "^2.0.2",
+    "dotenv": "^16.4.5",
+    "dto": "file:../libs/dto",
+    "event-module": "file:../libs/event-module",
     "next": "14.2.7",
+    "next-redux-wrapper": "^8.1.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-redux": "^8.0.5",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

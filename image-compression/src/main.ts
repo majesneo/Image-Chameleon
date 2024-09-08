@@ -7,7 +7,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const config = app.get<ConfigService>(ConfigService);
     await app.listen(config.get('PORT'), config.get('HOSTNAME'));
-    console.log('image-compression started');
+    console.log(`image-compression started on port ${config.get('PORT')}`);
   } catch (error) {
     console.error('Error image-compression:', error);
   }

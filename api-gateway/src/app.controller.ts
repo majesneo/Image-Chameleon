@@ -1,21 +1,31 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Query, ValidationPipe } from '@nestjs/common';
 import { RabbitMQService } from 'shared-rabbitmq-module';
-import { ConfigService } from '@nestjs/config';
-import { Reflector } from '@nestjs/core';
 import { EventTypes } from 'event-module';
+import { FileUploadDto } from 'dto';
 
 @Controller()
 export class AppController extends RabbitMQService {
-  constructor(configService: ConfigService, reflector: Reflector) {
-    super(configService, reflector);
-  }
-  @Post('imageCompression')
+  @Post(EventTypes.IMAGE_COMPRESSION)
   async sendEvent(@Body() dto: { message: string }): Promise<void> {
     try {
       console.log('send imageCompression');
       await this.publishToExchange({
         type: EventTypes.IMAGE_COMPRESSION,
         payload: 'test payload imageCompression',
+      });
+    } catch (error) {
+      console.error('Failed to send event:', error);
+    }
+  }
+
+  @Post(EventTypes.FILE_UPLOAD)
+  async fileUpload(
+    @Query(new ValidationPipe()) fileUploadDto: FileUploadDto,
+  ): Promise<string> {
+    try {
+      return await this.publishToExchange({
+        type: EventTypes.FILE_UPLOAD,
+        payload: fileUploadDto,
       });
     } catch (error) {
       console.error('Failed to send event:', error);

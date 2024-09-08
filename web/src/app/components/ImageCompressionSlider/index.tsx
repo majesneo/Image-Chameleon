@@ -10,6 +10,7 @@ import {
 } from 'antd';
 import imageCompression from 'browser-image-compression';
 import { WrapperSlider } from '@/app/components/ImageCompressionSlider/styles';
+import { TextStyle } from '@/app/styles';
 
 const { Text } = Typography;
 
@@ -28,7 +29,9 @@ const ImageCompressionSlider: React.FC = () => {
   const [compressedSize, setCompressedSize] = useState<number>(0);
   const imageUrl: string = '/image-compression.jpeg';
   const isFirstLoading = useRef(true);
-
+  const qualityReduction = Number(
+    (100 - (compressedSize / originalSize) * 100).toFixed(2)
+  );
   useEffect(() => {
     compressImage(compression);
     isFirstLoading.current = false;
@@ -39,7 +42,9 @@ const ImageCompressionSlider: React.FC = () => {
   };
 
   const compressImage = async (quality: CompressionLevel): Promise<void> => {
-    setLoading(true);
+    if (isFirstLoading.current) {
+      setLoading(true);
+    }
     const options = {
       maxSizeMB: 1,
       maxWidthOrHeight: 800,
@@ -64,6 +69,7 @@ const ImageCompressionSlider: React.FC = () => {
 
   return (
     <Flex style={WrapperSlider}>
+      <Text style={TextStyle}>Change the image quality</Text>
       <Slider
         marks={marks}
         style={{ width: '100%', maxWidth: 400, zIndex: 10 }}
@@ -72,38 +78,53 @@ const ImageCompressionSlider: React.FC = () => {
         value={compression}
         onChange={handleSliderChange}
       />
-      <div style={{ marginTop: '20px', width: '100%' }}>
-        {loading && isFirstLoading.current ? (
-          <Skeleton.Image
-            active={true}
-            style={{ width: 600, height: '400px' }}
+      <Flex
+        style={{ marginTop: '20px', width: '100%', flexDirection: 'column' }}
+      >
+        <Skeleton.Image
+          active={true}
+          style={{
+            width: '600px',
+            height: '400px',
+            display: !loading && !isFirstLoading.current ? 'none' : 'flex'
+          }}
+        />
+        <>
+          <Image
+            src={compressedImage || ''}
+            alt="Compressed"
+            style={{
+              width: '600px',
+              height: '400px',
+              display: compressedImage ? 'block' : 'none',
+              boxShadow: '10px 10px 20px rgba(0, 0, 0, 0.5)',
+              borderRadius: 4
+            }}
           />
-        ) : (
-          compressedImage && (
-            <>
-              <Image
-                src={compressedImage}
-                alt="Compressed"
-                style={{ maxWidth: '100%', maxHeight: '400px' }}
-              />
-              <Flex
-                style={{
-                  marginTop: '20px',
-                  flexDirection: 'column',
-                  alignItems: 'center'
-                }}
-              >
-                <Text>Original Size: {originalSize.toFixed(2)} KB</Text>
-                <Text>Compressed Size: {compressedSize.toFixed(2)} KB</Text>
-                <Text>
-                  Quality reduction :{' '}
-                  {(100 - (compressedSize / originalSize) * 100).toFixed(2)}%
-                </Text>
-              </Flex>
-            </>
-          )
-        )}
-      </div>
+          <Flex
+            style={{
+              marginTop: '20px',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
+            <Text>
+              Original Size:{' '}
+              <span style={TextStyle}>{originalSize.toFixed(2)} KB</span>
+            </Text>
+            <Text>
+              Compressed Size:{' '}
+              <span style={TextStyle}>{compressedSize.toFixed(2)} KB</span>
+            </Text>
+            <Text>
+              Quality reduction :{' '}
+              <span style={TextStyle}>
+                {isNaN(qualityReduction) ? 0 : qualityReduction}%
+              </span>
+            </Text>
+          </Flex>
+        </>
+      </Flex>
     </Flex>
   );
 };

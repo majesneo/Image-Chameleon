@@ -1,15 +1,15 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import { FileUploadModule } from './app.module';
 
 async function bootstrap() {
   try {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(FileUploadModule);
     const config = app.get<ConfigService>(ConfigService);
     await app.listen(config.get('PORT'), config.get('HOSTNAME'));
-    console.log('api-gateway started');
+    console.log(`file-upload started on port ${config.get('PORT')}`);
   } catch (error) {
-    console.error('Error api-gateway:', error);
+    console.error('Error file-upload:', error);
   }
 }
 

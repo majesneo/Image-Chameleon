@@ -40,7 +40,7 @@ const FeaturesMock: FeaturesMockI[] = [
     desc:
       'Achieve huge compressions while keeping the quality of the picture intact.\n' +
       '\n' +
-      'Compressor.io can help you reduce drastically the size of your images and photos whilst maintaining a high quality with almost no difference visible to the eye.',
+      'Image chameleon can help you reduce drastically the size of your images and photos whilst maintaining a high quality with almost no difference visible to the eye.',
     src: '/high-quality-compression.svg',
     title: (
       <Title>

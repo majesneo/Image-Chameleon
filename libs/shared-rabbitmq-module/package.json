@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "install:clean": "rm -rf node_modules && yarn install",
-    "setup": "tsc",
+    "install:all": "rm -rf node_modules && yarn install",
+    "install:dev": "tsc",
     "clean": "rm -rf dist"
   },
   "dependencies": {

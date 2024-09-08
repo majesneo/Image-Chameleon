@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./src/types"],
-    "include": ["src/**/*.ts", "src/types/**/*.d.ts"],
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,

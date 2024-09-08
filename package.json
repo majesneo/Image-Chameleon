@@ -7,9 +7,9 @@
   "author": "levtypets <levtypets@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "setup": "nx run-many --target=setup --all",
-    "dev": "/bin/bash /Users/levarshavin/image-chameleon/start-dev.sh",
-    "image-resolution:dev": "yarn workspace image-resolution-conversion run image-resolution:dev"
+    "install:dev": "sudo nx run-many --target=install:dev --all",
+    "install:all": "sudo nx run-many --target=install:all --all",
+    "dev": "/bin/bash /Users/levarshavin/image-chameleon/start-dev.sh"
   },
   "workspaces": [
     "api-gateway",
