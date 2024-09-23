@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { EventTypes } from 'event-module';
 import { FileUploadDto } from 'dto';
 
@@ -7,16 +7,12 @@ export const uploadApi = createApi({
     baseUrl: process.env.API_URL
   }),
   endpoints: (builder) => ({
-    getUploadUrl: builder.query({
-      query: ({ fileName, fileType }: FileUploadDto) => ({
+    getUploadUrl: builder.query<{ presignedUrl: string }, FileUploadDto>({
+      query: ({ fileName, fileType }) => ({
         url: `${EventTypes.FILE_UPLOAD}`,
         params: { fileName, fileType },
         method: 'GET'
-      }),
-      transformResponse(baseQueryReturnValue) {
-        console.log(baseQueryReturnValue, 'baseQueryReturnValue');
-        return baseQueryReturnValue;
-      }
+      })
     })
   })
 });

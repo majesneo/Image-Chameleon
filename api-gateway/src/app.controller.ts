@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Query, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
 import { RabbitMQService } from 'shared-rabbitmq-module';
 import { EventTypes } from 'event-module';
 import { FileUploadDto } from 'dto';
@@ -18,10 +25,8 @@ export class AppController extends RabbitMQService {
     }
   }
 
-  @Post(EventTypes.FILE_UPLOAD)
-  async fileUpload(
-    @Query(new ValidationPipe()) fileUploadDto: FileUploadDto,
-  ): Promise<string> {
+  @Get(EventTypes.FILE_UPLOAD)
+  async fileUpload(@Query(new ValidationPipe()) fileUploadDto: FileUploadDto) {
     try {
       return await this.publishToExchange({
         type: EventTypes.FILE_UPLOAD,

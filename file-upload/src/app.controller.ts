@@ -16,13 +16,13 @@ export class FileUploadController extends RabbitMQService {
 
   @EventHandler(EventTypes.FILE_UPLOAD)
   async handleFileUpload(@Body(new ValidationPipe()) fileUploadDto: FileUploadDto, @ReplyTo() replyTo: string,
-                         @CorrelationId() correlationId: string): Promise<void> {
+                         @CorrelationId() correlationId: string){
     try {
       const { fileName, fileType } = fileUploadDto;
       const presignedUrl = await this.uploadService.generatePresignedUrl(fileName, fileType);
 
 
-      this.channel?.sendToQueue(replyTo, Buffer.from(presignedUrl), {
+      this.channel?.sendToQueue(replyTo, Buffer.from(JSON.stringify({ presignedUrl })), {
         correlationId: correlationId,
       });
     } catch (error) {

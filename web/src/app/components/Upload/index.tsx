@@ -1,9 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Flex,
   GetProp,
   Image,
+  message,
   Typography,
   Upload,
   UploadFile,
@@ -11,6 +12,8 @@ import {
 } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { TextStyle } from '@/app/styles';
+import { useLazyGetUploadUrlQuery } from '@/app/store/upload/api';
+import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 
 const { Dragger } = Upload;
 const { Text } = Typography;
@@ -25,24 +28,76 @@ const getBase64 = (file: FileType): Promise<string> =>
   });
 
 const UploadWrapper: React.FC = () => {
+  const [action, setAction] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  // const [getUploadUrl] = useLazyGetUploadUrlQuery();
-  console.log(fileList, 'fileList');
+  const [getUploadUrl] = useLazyGetUploadUrlQuery();
+
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as FileType);
     }
-
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
   };
 
-  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-    console.log(newFileList, 'newFileList');
-    // getUploadUrl(newFileList);
-    setFileList(newFileList);
+  const handleChange: UploadProps['onChange'] = useCallback(
+    ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
+      setFileList(newFileList);
+    },
+    []
+  );
+
+  const beforeUpload = async (file: FileType) => {
+    const { data, error } = await getUploadUrl({
+      fileName: file.name,
+      fileType: file.type || ''
+    });
+
+    if (error || !data?.presignedUrl) {
+      message.error('Failed to get presigned URL!');
+      return false;
+    }
+
+    setAction(data.presignedUrl);
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('You can only upload image files!');
+      return false;
+    }
+
+    const isLt10M = file.size / 1024 / 1024 < 10;
+    if (!isLt10M) {
+      message.error('Image must be smaller than 10MB!');
+      return false;
+    }
+
+    return true;
+  };
+
+  const customRequest = async (options: RcCustomRequestOptions) => {
+    const { file, onSuccess, onError } = options;
+
+    try {
+      const response = await fetch(action, {
+        method: 'PUT',
+        body: file as Blob,
+        headers: {
+          'Content-Type': (file as File).type
+        }
+      });
+
+      if (response.ok) {
+        if (onSuccess) onSuccess(file);
+        message.success('File uploaded successfully.');
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      if (onError) onError(error as ProgressEvent);
+      message.error('File upload failed.');
+    }
   };
 
   return (
@@ -56,7 +111,8 @@ const UploadWrapper: React.FC = () => {
         style={{
           marginBottom: 10
         }}
-        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+        customRequest={customRequest}
+        beforeUpload={beforeUpload}
         listType="picture-card"
         fileList={fileList}
         onPreview={handlePreview}
@@ -64,6 +120,7 @@ const UploadWrapper: React.FC = () => {
         height={300}
         multiple
         accept={'image/*'}
+        method="PUT"
       >
         <Flex
           style={{

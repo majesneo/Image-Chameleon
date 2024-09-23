@@ -15,19 +15,19 @@ export class UploadService implements IUploadService {
     'image/gif',
     'image/webp'
   ];
-  
+
   constructor() {
     try {
       this.s3 = new S3Client({
         credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+          accessKeyId: process.env.AWS_ACCESS_KEY|| '',
           secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
         },
         region: process.env.AWS_REGION || '',
       });
 
       if (
-        !process.env.AWS_ACCESS_KEY_ID ||
+        !process.env.AWS_ACCESS_KEY ||
         !process.env.AWS_SECRET_ACCESS_KEY ||
         !process.env.AWS_REGION
       ) {
@@ -61,9 +61,7 @@ export class UploadService implements IUploadService {
         Bucket: bucketName,
         Key: `${Date.now().toString()}-${fileName}`,
         ContentType: fileType,
-        ContentLength: this.maxFileSizeMB,
       });
-
       this.logger.log(`Generating presigned URL for file: ${fileName}, type: ${fileType}`);
 
       const presignedUrl = await getSignedUrl(this.s3, command, { expiresIn: 3600 });

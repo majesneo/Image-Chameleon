@@ -2,7 +2,7 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as amqplib from 'amqplib';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
-import { EventTypes } from 'event-module'; // Импортируем enum EventTypes
+import { EventTypes } from 'event-module';
 
 interface Event<P> {
   type: EventTypes;
@@ -46,21 +46,26 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
     return Math.random().toString() + Math.random().toString() + Math.random().toString();
   }
 
-  async publishToExchange<P>(event: Event<P>): Promise<string> {
+  async publishToExchange<P>(event: Event<P>): Promise<P | { message: string }> {
     const correlationId = this.generateCorrelationId();
-    const replyQueue = await this.channel!.assertQueue('', { exclusive: true }); // Временная очередь для ответа
+    const replyQueue = await this.channel!.assertQueue('', { exclusive: true });
 
     return new Promise((resolve, reject) => {
       this.channel!.consume(
         replyQueue.queue,
         (msg) => {
           if (msg?.properties.correlationId === correlationId) {
-            resolve(msg.content.toString());
+            try {
+              const parsedMessage: P = JSON.parse(msg.content.toString());
+              resolve(parsedMessage);
+            } catch (error) {
+              resolve({ message: msg.content.toString() });
+            }
           }
         },
         { noAck: true },
       );
-
+      
       const message = JSON.stringify(event);
       this.channel?.publish(this.exchange, '', Buffer.from(message), {
         correlationId,
