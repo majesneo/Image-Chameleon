@@ -18,13 +18,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "install:all": "rm -rf node_modules && yarn install",
-    "install:dev": "rm -rf node_modules/shared-rabbitmq-module node_modules/event-module node_modules/dto && yarn install"
+    "install:all": "sudo rm -rf node_modules && sudo npm install",
+    "install:dev": "sudo rm -rf node_modules/shared-rabbitmq-module node_modules/event-module node_modules/dto && sudo npm install"
   },
   "dependencies": {
-    "shared-rabbitmq-module": "file:../libs/shared-rabbitmq-module",
-    "event-module": "file:../libs/event-module",
-    "dto": "file:../libs/dto",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
@@ -32,10 +29,14 @@
     "@nestjs/platform-express": "^10.0.0",
     "amqp-connection-manager": "^3.2.1",
     "amqplib": "^0.6.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "dto": "file:../libs/dto",
+    "event-module": "file:../libs/event-module",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "class-validator": "^0.14.1",
-    "class-transformer": "^0.5.1"
+    "shared-rabbitmq-module": "file:../libs/shared-rabbitmq-module",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

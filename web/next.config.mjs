@@ -18,7 +18,7 @@ if (fs.existsSync(fullPath)) {
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    API_URL: process.env.API_URL
+    URL_UPLOAD: process.env.URL_UPLOAD
   }
 };
 

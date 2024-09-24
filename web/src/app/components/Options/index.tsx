@@ -7,6 +7,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const { Text } = Typography;
 
+export interface ResolutionOptions {
+  mobile?: boolean;
+  tablet?: boolean;
+  desktop?: boolean;
+}
+
 const Options = () => {
   const dispatch = useDispatch();
   const { mobile, tablet, desktop } = useSelector(selectOptions);
@@ -80,7 +86,7 @@ const Options = () => {
             </Flex>
           </Card>
         </Badge.Ribbon>
-        <Badge.Ribbon text="Converot">
+        <Badge.Ribbon text="Convertor">
           <Card
             styles={{
               header: {

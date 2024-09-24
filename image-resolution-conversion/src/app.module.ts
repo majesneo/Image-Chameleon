@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ImageResolutionConversionService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { SharedRabbitMQModule } from 'shared-rabbitmq-module';
+import { IMAGE_RESOLUTION_CONVERSION } from './constants';
 
 @Module({
   imports: [
@@ -12,6 +13,12 @@ import { SharedRabbitMQModule } from 'shared-rabbitmq-module';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, SharedRabbitMQModule],
+  providers: [
+    SharedRabbitMQModule,
+    {
+      provide: IMAGE_RESOLUTION_CONVERSION,
+      useClass: ImageResolutionConversionService,
+    },
+  ],
 })
 export class AppModule {}

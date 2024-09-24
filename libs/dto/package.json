@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "install:all": "rm -rf node_modules && yarn install",
+    "install:all": "sudo rm -rf node_modules && sudo npm install",
     "install:dev": "tsc",
     "clean": "rm -rf dist"
   },
