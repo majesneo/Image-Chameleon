@@ -7,6 +7,7 @@ import { ImageFormatStrategy } from './image-format-strategy.interface';
 @Injectable()
 export class PngStrategy implements ImageFormatStrategy {
   constructor(private readonly logger: Logger) {}
+
   async process(
     buffer: Buffer,
     width: number,
@@ -14,8 +15,8 @@ export class PngStrategy implements ImageFormatStrategy {
   ): Promise<Buffer> {
     try {
       const processedBuffer = await sharp(buffer)
-        .resize(width, height)
-        .png({ compressionLevel: 6 })
+        .resize(width, height, { fit: 'inside' })
+        .png({ compressionLevel: 9 })
         .toBuffer();
       this.logger.log('PNG image processed successfully.');
       return processedBuffer;

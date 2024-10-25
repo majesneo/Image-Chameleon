@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class FileUploadDto {
   @IsNotEmpty()
@@ -8,10 +8,6 @@ export class FileUploadDto {
   @IsNotEmpty()
   @IsString()
   fileType: string;
-
-  @IsOptional()
-  @IsString()
-  fileId?: string;
 }
 
 export class FileUploadDtoResponse {

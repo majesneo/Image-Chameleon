@@ -76,13 +76,14 @@ export class ImageResolutionConversionService
     }
   }
 
-  async getDownloadUrlImage(fileDownloadDto: FileDownloadDto): Promise<string> {
+  async getDownloadUrlImage(
+    fileDownloadDto: FileDownloadDto,
+  ): Promise<FileDownloadDtoResponse> {
     try {
-      const { presignedUrlDownload } = await this.sendEventService.sendEvent<
+      return await this.sendEventService.sendEvent<
         FileDownloadDto,
         FileDownloadDtoResponse
       >(EventTypes.FILE_DOWNLOAD, EventQueue.FILE, fileDownloadDto);
-      return presignedUrlDownload;
     } catch (error) {
       this.logger.error(
         `Failed to get download URL: ${(error as Error).message}`,
@@ -91,13 +92,15 @@ export class ImageResolutionConversionService
     }
   }
 
-  async getPresignedUrl(fileUploadDto: FileUploadDto) {
+  async getPresignedUrl(
+    fileUploadDto: FileUploadDto,
+  ): Promise<FileUploadDtoResponse> {
     try {
-      const { presignedUrl } = await this.sendEventService.sendEvent<
+      const { presignedUrl, fileId } = await this.sendEventService.sendEvent<
         FileUploadDto,
         FileUploadDtoResponse
       >(EventTypes.FILE_UPLOAD, EventQueue.FILE, fileUploadDto);
-      return presignedUrl;
+      return { presignedUrl, fileId };
     } catch (error) {
       this.logger.error(
         `Failed to get presigned URL for upload: ${(error as Error).message}`,
@@ -105,8 +108,12 @@ export class ImageResolutionConversionService
     }
   }
 
-  async uploadFile(presignedUrlUpload: string, processedBuffer: Buffer, file) {
-    const { fileType, newFileName } = file;
+  async uploadFile(
+    presignedUrlUpload: string,
+    processedBuffer: Buffer,
+    file: FileUploadDto,
+  ) {
+    const { fileType, fileName } = file;
     try {
       await firstValueFrom(
         this.httpService
@@ -118,16 +125,16 @@ export class ImageResolutionConversionService
           .pipe(
             catchError((error: AxiosError) => {
               this.logger.error(
-                `Failed to upload ${newFileName}: ${error.message}`,
+                `Failed to upload ${fileName}: ${error.message}`,
               );
-              throw new Error(`Failed to upload ${newFileName}`);
+              throw new Error(`Failed to upload ${fileName}`);
             }),
           ),
       );
-      this.logger.log(`Successfully uploaded ${newFileName}`);
+      this.logger.log(`Successfully uploaded ${fileName}`);
     } catch (error) {
       this.logger.error(
-        `Error uploading ${newFileName}: ${(error as Error).message}`,
+        `Error uploading ${fileName}: ${(error as Error).message}`,
       );
     }
   }
@@ -137,8 +144,10 @@ export class ImageResolutionConversionService
   ): Promise<string[]> {
     const { options, originalFileName, fileId } = imageResolutionConversionDto;
     const fileDownloadDto: FileDownloadDto = { fileId };
-    const downloadUrlImage = await this.getDownloadUrlImage(fileDownloadDto);
-    const { buffer, format } = await this.getImage(downloadUrlImage);
+    const { presignedUrlDownload } =
+      await this.getDownloadUrlImage(fileDownloadDto);
+    const { buffer, format } = await this.getImage(presignedUrlDownload);
+    const resolutionEntries = Object.entries(options).filter(([, v]) => v);
     const filesProcessedSharp: Buffer[] = [];
     const filesDownloadUrls: string[] = [];
 
@@ -150,7 +159,6 @@ export class ImageResolutionConversionService
       throw error;
     }
 
-    const resolutionEntries = Object.entries(options).filter(([, v]) => v);
     const processingPromises = resolutionEntries.map(async ([key]) => {
       const { width, height } =
         this.resolutions[key as keyof ResolutionOptionsDto];
@@ -178,7 +186,7 @@ export class ImageResolutionConversionService
         const resolutionKey = resolutionEntries[index][0];
         const fileExtension = format.toLowerCase() as ImageFormat;
         const baseName = originalFileName
-          ? originalFileName.replace(/\.[^/.]+$/, '') // Remove extension
+          ? originalFileName.replace(/\.[^/.]+$/, '')
           : `processed_image_${Date.now()}`;
         const newFileName = `${baseName}_${resolutionKey}.${fileExtension}`;
 
@@ -186,21 +194,20 @@ export class ImageResolutionConversionService
           MIME_TYPES[fileExtension] ||
           ('application/octet-stream' as ImageFormat);
 
-        const presignedUrlUpload = await this.getPresignedUrl({
+        const { presignedUrl, fileId: newFileId } = await this.getPresignedUrl({
           fileName: newFileName,
-          fileType: fileType,
-          fileId: fileId,
+          fileType,
         });
 
-        await this.uploadFile(presignedUrlUpload, processedBuffer, {
+        await this.uploadFile(presignedUrl, processedBuffer, {
           fileName: newFileName,
-          fileType: fileType,
+          fileType,
         });
 
-        const fileDownloadDto = { fileId };
-        const downloadUrlImage =
+        const fileDownloadDto = { fileId: newFileId };
+        const { presignedUrlDownload } =
           await this.getDownloadUrlImage(fileDownloadDto);
-        filesDownloadUrls.push(downloadUrlImage);
+        filesDownloadUrls.push(presignedUrlDownload);
 
         return processedBuffer;
       },
@@ -209,7 +216,6 @@ export class ImageResolutionConversionService
     await Promise.all(uploadPromises);
 
     this.logger.log(`All processed files have been uploaded.`);
-    console.log(filesDownloadUrls, 'filesDownloadUrls');
     return filesDownloadUrls;
   }
 }

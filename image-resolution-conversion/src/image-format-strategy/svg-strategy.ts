@@ -1,4 +1,3 @@
-// src/image-strategies/svg-strategy.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { ImageFormatStrategy } from './image-format-strategy.interface';
 import { Builder, parseStringPromise } from 'xml2js';

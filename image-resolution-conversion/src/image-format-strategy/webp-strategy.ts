@@ -12,8 +12,8 @@ export class WebpStrategy implements ImageFormatStrategy {
   ): Promise<Buffer> {
     try {
       const processedBuffer = await sharp(buffer)
-        .resize(width, height)
-        .png({ quality: 100 })
+        .resize(width, height, { fit: 'inside' })
+        .webp({ quality: 100 })
         .toBuffer();
       this.logger.log('Webp image processed successfully.');
       return processedBuffer;

@@ -24,12 +24,9 @@ export class ImageResolutionConversionController {
     imageResolutionConversionDto: ImageResolutionConversionDto,
   ) {
     try {
-      const filesDownloadUrls =
-        await this.imageResolutionConversionService.resolutionConversion(
-          imageResolutionConversionDto,
-        );
-      console.log(filesDownloadUrls, 'filesDownloadUrls');
-      return filesDownloadUrls;
+      return await this.imageResolutionConversionService.resolutionConversion(
+        imageResolutionConversionDto,
+      );
     } catch (error) {
       throw new InternalServerErrorException(
         `Failed to ${EventTypes.IMAGE_RESOLUTION_CONVERSION}`,

@@ -12,8 +12,8 @@ export class JpegStrategy implements ImageFormatStrategy {
   ): Promise<Buffer> {
     try {
       const processedBuffer = await sharp(buffer)
-        .resize(width, height)
-        .png({ quality: 100 })
+        .resize(width, height, { fit: 'inside' })
+        .jpeg({ quality: 100 })
         .toBuffer();
       this.logger.log('Jpeg image processed successfully.');
       return processedBuffer;

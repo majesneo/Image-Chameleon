@@ -30,10 +30,10 @@ export class FileUploadController {
     try {
       console.log("@MessagePattern('FILE_UPLOAD')");
       const { fileName, fileType } = fileUploadDto;
-      const { presignedUrl, fileId } =
+      const { presignedUrl, fileId: newFileId } =
         await this.uploadService.generatePresignedUrl(fileName, fileType);
       console.log(presignedUrl, 'presignedUrl');
-      return { presignedUrl, fileId };
+      return { presignedUrl, fileId: newFileId };
     } catch (error) {
       console.error('Error in handleFileUpload:', error);
       throw error;
