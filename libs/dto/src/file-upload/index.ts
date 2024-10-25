@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class FileUploadDto {
   @IsNotEmpty()
@@ -8,6 +8,10 @@ export class FileUploadDto {
   @IsNotEmpty()
   @IsString()
   fileType: string;
+
+  @IsOptional()
+  @IsString()
+  fileId?: string;
 }
 
 export class FileUploadDtoResponse {
@@ -31,3 +35,19 @@ export class FileDownloadDtoResponse {
   @IsString()
   presignedUrlDownload: string;
 }
+
+export enum ImageFormat {
+  JPEG = "jpeg",
+  JPG = "jpg",
+  PNG = "png",
+  WEBP = "webp",
+  SVG = "svg",
+}
+
+export const MIME_TYPES: Record<ImageFormat, string> = {
+  [ImageFormat.JPEG]: "image/jpeg",
+  [ImageFormat.JPG]: "image/jpeg",
+  [ImageFormat.PNG]: "image/png",
+  [ImageFormat.WEBP]: "image/webp",
+  [ImageFormat.SVG]: "image/svg+xml",
+};

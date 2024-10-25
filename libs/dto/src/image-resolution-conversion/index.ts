@@ -30,4 +30,8 @@ export class ImageResolutionConversionDto {
   @ValidateNested()
   @Type(() => ResolutionOptionsDto)
   options: ResolutionOptionsDto;
+
+  @IsNotEmpty()
+  @IsString()
+  originalFileName: string;
 }

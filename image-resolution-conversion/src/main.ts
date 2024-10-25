@@ -1,21 +1,33 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
+import { Transport } from '@nestjs/microservices';
+import { EventQueue } from 'event-module';
+import { ImageResolutionConversionModule } from './image-resolution-conversion.module';
 
 async function bootstrap() {
   try {
-    const app = await NestFactory.create(AppModule);
-    const config = app.get<ConfigService>(ConfigService);
-    app.enableCors({
-      origin: 'http://localhost:3000',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    });
-    await app.listen(config.get('PORT'), config.get('HOSTNAME'));
+    const app = await NestFactory.createMicroservice(
+      ImageResolutionConversionModule,
+      {
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.AMQP_URL || 'amqp://localhost:5672'],
+          queue: EventQueue.IMAGE_RESOLUTION_CONVERSION,
+          queueOptions: {
+            durable: true,
+          },
+        },
+      },
+    );
+
+    await app.listen();
     console.log(
-      `image-resolution-conversion started on port ${config.get('PORT')}`,
+      `${ImageResolutionConversionModule.name} Microservice is listening...`,
     );
   } catch (error) {
-    console.error('Error image-resolution-conversion:', error);
+    console.error(
+      `Error in ${ImageResolutionConversionModule.name} Microservice:`,
+      error,
+    );
   }
 }
 

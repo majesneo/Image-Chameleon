@@ -11,6 +11,7 @@ import {
 } from 'redux-persist';
 import rootReducer from './rootReducer';
 import { uploadApi } from '@/app/store/upload/api';
+import { imageResolutionConversionApi } from '@/app/store/imageResolutionConversion/api';
 
 const devMode = process.env.NODE_ENV === 'development';
 
@@ -22,7 +23,10 @@ const makeStore = () => {
         serializableCheck: {
           ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
         }
-      }).concat([uploadApi.middleware]),
+      }).concat([
+        uploadApi.middleware,
+        imageResolutionConversionApi.middleware
+      ]),
     devTools: devMode
   });
   const persistor = persistStore(store);

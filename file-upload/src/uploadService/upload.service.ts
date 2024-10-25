@@ -60,13 +60,14 @@ export class UploadService implements IUploadService {
   async generatePresignedUrl(
     fileName: string,
     fileType: string,
+    fileId?: string,
   ): Promise<FileUploadDtoResponse> {
     try {
       this.checkRules(fileType);
-      const fileId = this.generateFileId(fileName);
+      const generatedFileId = this.generateFileId(fileName);
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
-        Key: fileId,
+        Key: fileId || generatedFileId,
         ContentType: fileType,
       });
 
@@ -74,7 +75,7 @@ export class UploadService implements IUploadService {
         expiresIn: 3600,
       });
 
-      return { presignedUrl, fileId };
+      return { presignedUrl, fileId: fileId || generatedFileId };
     } catch (error) {
       this.logger.error('Error during presigned URL generation', error.stack);
 

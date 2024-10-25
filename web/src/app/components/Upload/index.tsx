@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Flex,
   GetProp,
@@ -14,10 +14,12 @@ import { InboxOutlined } from '@ant-design/icons';
 import { TextStyle } from '@/app/styles';
 import { useLazyGetUploadUrlQuery } from '@/app/store/upload/api';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectOptions } from '@/app/store/options/slice';
 import { ResolutionOptions } from '@/app/components/Options';
-import { useLazyGetImageResolutionConversionQuery } from '@/app/store/imageCompression/api';
+import { usePostImageResolutionConversionMutation } from '@/app/store/imageResolutionConversion/api';
+import { setImagesResolution } from '@/app/store/imageResolutionConversion/slice';
+import { increaseCurrentSteps } from '@/app/store/steps/slice';
 
 const { Dragger } = Upload;
 const { Text } = Typography;
@@ -26,6 +28,7 @@ type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 export interface FileInfo {
   fileId: string;
   options: ResolutionOptions;
+  originalFileName: string;
 }
 
 const getBase64 = (file: FileType): Promise<string> =>
@@ -42,11 +45,20 @@ const UploadWrapper: React.FC = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const dispatch = useDispatch();
   const [getUploadUrl] = useLazyGetUploadUrlQuery();
-  const [getImageResolutionConversion] =
-    useLazyGetImageResolutionConversionQuery();
-  const { mobile, tablet, desktop } = useSelector(selectOptions);
+  const [
+    postImageResolutionConversion,
+    { data: imagesResolution, isSuccess: isSuccessImagesResolution }
+  ] = usePostImageResolutionConversionMutation();
 
+  useEffect(() => {
+    if (isSuccessImagesResolution) {
+      dispatch(setImagesResolution(imagesResolution));
+      dispatch(increaseCurrentSteps());
+    }
+  }, [dispatch, imagesResolution, isSuccessImagesResolution]);
+  const { mobile, tablet, desktop } = useSelector(selectOptions);
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as FileType);
@@ -63,16 +75,6 @@ const UploadWrapper: React.FC = () => {
   );
 
   const beforeUpload = async (file: FileType) => {
-    const { data, error } = await getUploadUrl({
-      fileName: file.name,
-      fileType: file.type || ''
-    });
-    console.log(data, 'data');
-    if (error || !data?.presignedUrl) {
-      message.error('Failed to get presigned URL!');
-      return false;
-    }
-
     const isImage = file.type.startsWith('image/');
     if (!isImage) {
       message.error('You can only upload image files!');
@@ -84,11 +86,22 @@ const UploadWrapper: React.FC = () => {
       message.error('Image must be smaller than 10MB!');
       return false;
     }
-    console.log(file, 'file');
+
+    const { data, error } = await getUploadUrl({
+      fileName: file.name,
+      fileType: file.type || ''
+    });
+
+    if (error || !data?.presignedUrl) {
+      message.error('File upload failed.');
+      return false;
+    }
+
     setAction(data.presignedUrl);
     setFileIdMap((prev) => ({
       ...prev,
       [file.uid]: {
+        originalFileName: file.name,
         fileId: data.fileId,
         options: {
           mobile,
@@ -115,9 +128,8 @@ const UploadWrapper: React.FC = () => {
       if (response.ok) {
         if (onSuccess) onSuccess(file);
         message.success('File uploaded successfully.');
-        // const currentFileIdMap = fileIdMap[(file as UploadFile).uid];
-        // getImageResolutionConversion(currentFileIdMap);
-        // console.log('Uploaded file ID:', currentFileIdMap);
+        const currentFileIdMap = fileIdMap[(file as UploadFile).uid];
+        postImageResolutionConversion(currentFileIdMap);
       } else {
         throw new Error('Upload failed');
       }

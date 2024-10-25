@@ -1,23 +1,31 @@
-import React, { FC, ReactNode, useState } from 'react';
-import { Button, message, Steps, theme } from 'antd';
-
-export type Step = {
-  title: string;
-  content: ReactNode;
-  icon?: ReactNode;
-};
+import React, { FC, useCallback, useEffect } from 'react';
+import { Button, Flex, message, Steps, theme } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  decreaseCurrentSteps,
+  increaseCurrentSteps,
+  selectCurrentSteps,
+  selectSteps,
+  setSteps
+} from '@/app/store/steps/slice';
+import { Step } from '@/app/components/Steps/stepsData';
 
 const StepsWrapper: FC<{ steps: Step[] }> = ({ steps }) => {
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(0);
+  const dispatch = useDispatch();
+  const selectedSteps = useSelector(selectSteps);
+  const currentSteps = useSelector(selectCurrentSteps);
+  useEffect(() => {
+    dispatch(setSteps(steps.length - 1));
+  }, []);
 
-  const next = () => {
-    setCurrent(current + 1);
-  };
+  const next = useCallback(() => {
+    dispatch(increaseCurrentSteps());
+  }, [dispatch]);
 
-  const prev = () => {
-    setCurrent(current - 1);
-  };
+  const prev = useCallback(() => {
+    dispatch(decreaseCurrentSteps());
+  }, [dispatch]);
 
   const items = steps.map((item) => ({
     key: item.title,
@@ -39,16 +47,23 @@ const StepsWrapper: FC<{ steps: Step[] }> = ({ steps }) => {
   };
 
   return (
-    <>
-      <Steps current={current} items={items} />
-      <div style={contentStyle}>{steps[current].content}</div>
+    <Flex
+      style={{
+        alignItems: 'center',
+        flexDirection: 'column',
+        width: '100%',
+        maxWidth: '70%'
+      }}
+    >
+      <Steps current={currentSteps} items={items} />
+      <div style={contentStyle}>{steps[currentSteps].content}</div>
       <div style={{ marginTop: 24 }}>
-        {current < steps.length - 1 && (
-          <Button type="primary" onClick={() => next()}>
+        {currentSteps < selectedSteps && (
+          <Button type="primary" onClick={next}>
             Next
           </Button>
         )}
-        {current === steps.length - 1 && (
+        {currentSteps === selectedSteps && (
           <Button
             type="primary"
             onClick={() => message.success('Processing complete!')}
@@ -56,13 +71,13 @@ const StepsWrapper: FC<{ steps: Step[] }> = ({ steps }) => {
             Done
           </Button>
         )}
-        {current > 0 && (
-          <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
+        {currentSteps > 0 && (
+          <Button style={{ margin: '0 8px' }} onClick={prev}>
             Previous
           </Button>
         )}
       </div>
-    </>
+    </Flex>
   );
 };
 

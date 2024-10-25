@@ -1,19 +1,28 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
+import { Transport } from '@nestjs/microservices';
+import { EventQueue } from 'event-module';
+import { ImageCompressionModule } from './image-compression.module';
 
 async function bootstrap() {
   try {
-    const app = await NestFactory.create(AppModule);
-    const config = app.get<ConfigService>(ConfigService);
-    app.enableCors({
-      origin: 'http://localhost:3000',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    const app = await NestFactory.createMicroservice(ImageCompressionModule, {
+      transport: Transport.RMQ,
+      options: {
+        urls: [process.env.AMQP_URL || 'amqp://localhost:5672'],
+        queue: EventQueue.IMAGE_COMPRESSION,
+        queueOptions: {
+          durable: true,
+        },
+      },
     });
-    await app.listen(config.get('PORT'), config.get('HOSTNAME'));
-    console.log(`image-compression started on port ${config.get('PORT')}`);
+
+    await app.listen();
+    console.log(`${ImageCompressionModule.name} Microservice is listening...`);
   } catch (error) {
-    console.error('Error image-compression:', error);
+    console.error(
+      `Error in ${ImageCompressionModule.name} Microservice:`,
+      error,
+    );
   }
 }
 

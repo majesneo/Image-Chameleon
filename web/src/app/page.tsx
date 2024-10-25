@@ -8,27 +8,15 @@ import Feature from '@/app/components/Feature';
 import FeaturesMock from '@/app/components/Feature/mock';
 import Description from '@/app/components/Description';
 import Steps from '@/app/components/Steps';
-import { steps } from '@/app/mockHomePage';
+import { steps } from '@/app/components/Steps/stepsData';
 
 export default function Page() {
-  // const onChange = (checked: boolean) => {
-  //   console.log(`switch to ${checked}`);
-  // };
   return (
     <Content className={'content'} style={contentStyle}>
       <Description />
       <ImageCompressionSlider />
 
-      <Flex
-        style={{
-          alignItems: 'center',
-          flexDirection: 'column',
-          width: '100%',
-          maxWidth: '70%'
-        }}
-      >
-        <Steps steps={steps} />
-      </Flex>
+      <Steps steps={steps} />
 
       <Flex
         gap={30}

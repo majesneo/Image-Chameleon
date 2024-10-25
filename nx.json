@@ -25,15 +25,9 @@
       ],
       "cache": false
     },
-    "install:dev": {
+    "reinstallAll": {
       "dependsOn": [
-        "^install:dev"
-      ],
-      "cache": false
-    },
-    "install:all": {
-      "dependsOn": [
-        "^install:all"
+        "^reinstallAll"
       ],
       "cache": false
     }
@@ -44,24 +38,14 @@
       "sourceRoot": "api-gateway/src",
       "projectType": "application",
       "targets": {
-        "install:dev": {
+        "reinstallAll": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace api-gateway run install:dev",
+            "command": "yarn workspace api-gateway run reinstallAll",
             "cwd": "api-gateway"
           },
           "dependsOn": [
-            "^install:dev"
-          ]
-        },
-        "install:all": {
-          "executor": "nx:run-commands",
-          "options": {
-            "command": "yarn workspace api-gateway run install:all",
-            "cwd": "api-gateway"
-          },
-          "dependsOn": [
-            "^install:all"
+            "^reinstallAll"
           ]
         },
         "build": {
@@ -78,7 +62,7 @@
         }
       },
       "implicitDependencies": [
-        "shared-rabbitmq-module",
+        "client-proxy-factory",
         "event-module"
       ]
     },
@@ -87,24 +71,14 @@
       "sourceRoot": "file-upload/src",
       "projectType": "application",
       "targets": {
-        "install:dev": {
+        "reinstallAll": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace file-upload run install:dev",
+            "command": "yarn workspace file-upload run reinstallAll",
             "cwd": "file-upload"
           },
           "dependsOn": [
-            "^install:dev"
-          ]
-        },
-        "install:all": {
-          "executor": "nx:run-commands",
-          "options": {
-            "command": "yarn workspace file-upload run install:all",
-            "cwd": "file-upload"
-          },
-          "dependsOn": [
-            "^install:all"
+            "^reinstallAll"
           ]
         },
         "build": {
@@ -121,7 +95,7 @@
         }
       },
       "implicitDependencies": [
-        "shared-rabbitmq-module",
+        "client-proxy-factory",
         "event-module"
       ]
     },
@@ -130,24 +104,14 @@
       "sourceRoot": "image-compression/src",
       "projectType": "application",
       "targets": {
-        "install:dev": {
+        "reinstallAll": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace image-compression run install:dev",
+            "command": "yarn workspace image-compression run reinstallAll",
             "cwd": "image-compression"
           },
           "dependsOn": [
-            "^install:dev"
-          ]
-        },
-        "install:all": {
-          "executor": "nx:run-commands",
-          "options": {
-            "command": "yarn workspace image-compression run install:all",
-            "cwd": "image-compression"
-          },
-          "dependsOn": [
-            "^install:all"
+            "^reinstallAll"
           ]
         },
         "build": {
@@ -164,7 +128,7 @@
         }
       },
       "implicitDependencies": [
-        "shared-rabbitmq-module",
+        "client-proxy-factory",
         "event-module"
       ]
     },
@@ -173,24 +137,14 @@
       "sourceRoot": "image-resolution-conversion/src",
       "projectType": "application",
       "targets": {
-        "install:dev": {
+        "reinstallAll": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace image-resolution-conversion run install:dev",
+            "command": "yarn workspace image-resolution-conversion run reinstallAll",
             "cwd": "image-resolution-conversion"
           },
           "dependsOn": [
-            "^install:dev"
-          ]
-        },
-        "install:all": {
-          "executor": "nx:run-commands",
-          "options": {
-            "command": "yarn workspace image-resolution-conversion run install:all",
-            "cwd": "image-resolution-conversion"
-          },
-          "dependsOn": [
-            "^install:all"
+            "^reinstallAll"
           ]
         },
         "build": {
@@ -207,7 +161,7 @@
         }
       },
       "implicitDependencies": [
-        "shared-rabbitmq-module",
+        "client-proxy-factory",
         "event-module"
       ]
     },
@@ -250,17 +204,10 @@
       "sourceRoot": "libs/event-module/src",
       "projectType": "library",
       "targets": {
-        "install:dev": {
+        "reinstallAll": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn run install:dev",
-            "cwd": "libs/event-module"
-          }
-        },
-        "install:all": {
-          "executor": "nx:run-commands",
-          "options": {
-            "command": "yarn run install:all",
+            "command": "yarn run reinstallAll",
             "cwd": "libs/event-module"
           }
         },
@@ -272,29 +219,22 @@
         }
       }
     },
-    "shared-rabbitmq-module": {
-      "root": "libs/shared-rabbitmq-module",
-      "sourceRoot": "libs/shared-rabbitmq-module/src",
+    "client-proxy-factory": {
+      "root": "libs/client-proxy-factory",
+      "sourceRoot": "libs/client-proxy-factory/src",
       "projectType": "library",
       "targets": {
-        "install:dev": {
+        "reinstallAll": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn run install:dev",
-            "cwd": "libs/shared-rabbitmq-module"
-          }
-        },
-        "install:all": {
-          "executor": "nx:run-commands",
-          "options": {
-            "command": "yarn run install:all",
-            "cwd": "libs/shared-rabbitmq-module"
+            "command": "yarn run reinstallAll",
+            "cwd": "libs/client-proxy-factory"
           }
         },
         "build": {
           "executor": "nx:run-commands",
           "options": {
-            "command": "yarn workspace shared-rabbitmq-module run shared-rabbitmq:build"
+            "command": "yarn workspace client-proxy-factory run client-proxy-factory:build"
           }
         }
       }

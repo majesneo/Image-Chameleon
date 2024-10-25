@@ -5,8 +5,14 @@ import {
   UploadOutlined
 } from '@ant-design/icons';
 import Upload from '@/app/components/Upload';
-import React from 'react';
-import { Step } from '@/app/components/Steps';
+import React, { ReactNode } from 'react';
+import DownloadList from '@/app/components/DownloadList';
+
+export type Step = {
+  title: string;
+  content: ReactNode;
+  icon?: ReactNode;
+};
 
 export const steps: Step[] = [
   {
@@ -20,12 +26,8 @@ export const steps: Step[] = [
     icon: <UploadOutlined />
   },
   {
-    title: 'Process',
-    content: <div>Process</div>
-  },
-  {
     title: 'Done',
-    content: <div>Last</div>,
+    content: <DownloadList />,
     icon: <SmileOutlined />
   }
 ];

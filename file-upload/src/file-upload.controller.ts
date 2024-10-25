@@ -5,15 +5,7 @@ import {
   InternalServerErrorException,
   ValidationPipe,
 } from '@nestjs/common';
-import { EventHandler, EventTypes } from 'event-module';
-import {
-  CorrelationId,
-  RabbitMQService,
-  ReplyTo,
-} from 'shared-rabbitmq-module';
-import { IUploadService } from './upload-service.interface';
-import { ConfigService } from '@nestjs/config';
-import { Reflector } from '@nestjs/core';
+import { IUploadService } from './uploadService/upload-service.interface';
 import { UPLOAD_SERVICE } from './constants';
 import {
   FileDownloadDto,
@@ -21,49 +13,42 @@ import {
   FileUploadDto,
   FileUploadDtoResponse,
 } from 'dto';
+import { MessagePattern } from '@nestjs/microservices';
+import { EventTypes } from 'event-module';
 
 @Controller()
-export class FileUploadController extends RabbitMQService {
+export class FileUploadController {
   constructor(
-    configService: ConfigService,
-    reflector: Reflector,
-    @Inject(UPLOAD_SERVICE) private readonly uploadService: IUploadService,
-  ) {
-    super(configService, reflector);
-  }
+    @Inject(UPLOAD_SERVICE)
+    private readonly uploadService: IUploadService,
+  ) {}
 
-  @EventHandler(EventTypes.FILE_UPLOAD)
+  @MessagePattern(EventTypes.FILE_UPLOAD)
   async handleFileUpload(
     @Body(new ValidationPipe()) fileUploadDto: FileUploadDto,
-    @ReplyTo() replyTo: string,
-    @CorrelationId() correlationId: string,
   ): Promise<FileUploadDtoResponse> {
     try {
-      console.log('EventHandler FILE_UPLOAD');
+      console.log("@MessagePattern('FILE_UPLOAD')");
       const { fileName, fileType } = fileUploadDto;
       const { presignedUrl, fileId } =
         await this.uploadService.generatePresignedUrl(fileName, fileType);
-      await this.sendToQueue(replyTo, { presignedUrl, fileId }, correlationId);
+      console.log(presignedUrl, 'presignedUrl');
       return { presignedUrl, fileId };
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to generate presigned URL',
-        error.message,
-      );
+      console.error('Error in handleFileUpload:', error);
+      throw error;
     }
   }
 
-  @EventHandler(EventTypes.FILE_DOWNLOAD)
+  @MessagePattern(EventTypes.FILE_DOWNLOAD)
   async handleFileDownload(
     @Body(new ValidationPipe()) fileDownloadDto: FileDownloadDto,
-    @ReplyTo() replyTo: string,
-    @CorrelationId() correlationId: string,
   ): Promise<FileDownloadDtoResponse> {
     try {
+      console.log(fileDownloadDto, 'fileDownloadDto FILE_DOWNLOAD');
       const { fileId } = fileDownloadDto;
       const { presignedUrlDownload } =
         await this.uploadService.generateDownloadPresignedUrl(fileId);
-      await this.sendToQueue(replyTo, { presignedUrlDownload }, correlationId);
       return { presignedUrlDownload };
     } catch (error) {
       throw new InternalServerErrorException(
