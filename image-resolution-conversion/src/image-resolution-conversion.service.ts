@@ -1,6 +1,12 @@
 // src/image-resolution-conversion/image-resolution-conversion.service.ts
 
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   IImageResolutionConversionService,
   ImageDataI,
@@ -19,7 +25,7 @@ import { EventQueue, EventTypes } from 'event-module';
 import { CLIENT_PROXY, ClientProxySendEventI } from 'client-proxy-factory';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import sharp from 'sharp';
 import { ImageFormatStrategy } from './image-format-strategy/image-format-strategy.interface';
 import { ImageFormatStrategyFactory } from './image-format-strategy/image-format-strategy-factory.service';
@@ -48,13 +54,22 @@ export class ImageResolutionConversionService
 
   async getImage(presignedUrlDownload: string): Promise<ImageDataI> {
     try {
-      const response: AxiosResponse<ArrayBuffer> = await firstValueFrom(
+      this.logger.debug(`Downloading image from URL: ${presignedUrlDownload}`);
+
+      const response = await firstValueFrom(
         this.httpService
           .get(presignedUrlDownload, { responseType: 'arraybuffer' })
           .pipe(
             catchError((error: AxiosError) => {
-              this.logger.error(error.response?.data || 'Unknown error');
-              throw new Error('An error happened while downloading the image!');
+              this.logger.error(
+                `Error response data: ${error.response?.data || 'Unknown error'}`,
+              );
+              if (error.response?.status === 404) {
+                throw new NotFoundException('Image not found');
+              }
+              throw new InternalServerErrorException(
+                'An error happened while downloading the image!',
+              );
             }),
           ),
       );
@@ -63,7 +78,9 @@ export class ImageResolutionConversionService
       const metadata = await sharp(buffer).metadata();
 
       if (!metadata.format) {
-        throw new Error('Unable to determine image format.');
+        throw new InternalServerErrorException(
+          'Unable to determine image format.',
+        );
       }
 
       return {
@@ -72,7 +89,12 @@ export class ImageResolutionConversionService
       };
     } catch (error) {
       this.logger.error(`Failed to get image: ${(error as Error).message}`);
-      throw error;
+      // Если ошибка уже является исключением NestJS, повторно её выбрасываем
+      if (error instanceof Error) {
+        throw error;
+      }
+      // В противном случае, выбрасываем внутреннюю ошибку
+      throw new InternalServerErrorException('An unexpected error occurred.');
     }
   }
 
@@ -146,6 +168,7 @@ export class ImageResolutionConversionService
     const fileDownloadDto: FileDownloadDto = { fileId };
     const { presignedUrlDownload } =
       await this.getDownloadUrlImage(fileDownloadDto);
+    console.log(presignedUrlDownload, 'presignedUrlDownload');
     const { buffer, format } = await this.getImage(presignedUrlDownload);
     const resolutionEntries = Object.entries(options).filter(([, v]) => v);
     const filesProcessedSharp: Buffer[] = [];

@@ -5,6 +5,7 @@ import {
   GetProp,
   Image,
   message,
+  Spin,
   Typography,
   Upload,
   UploadFile,
@@ -19,7 +20,11 @@ import { selectOptions } from '@/app/store/options/slice';
 import { ResolutionOptions } from '@/app/components/Options';
 import { usePostImageResolutionConversionMutation } from '@/app/store/imageResolutionConversion/api';
 import { setImagesResolution } from '@/app/store/imageResolutionConversion/slice';
-import { increaseCurrentSteps } from '@/app/store/steps/slice';
+import {
+  increaseCurrentSteps,
+  selectIsLoadingSteps,
+  setIsLoadingSteps
+} from '@/app/store/steps/slice';
 
 const { Dragger } = Upload;
 const { Text } = Typography;
@@ -47,6 +52,7 @@ const UploadWrapper: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const dispatch = useDispatch();
   const [getUploadUrl] = useLazyGetUploadUrlQuery();
+  const isLoadingSteps = useSelector(selectIsLoadingSteps);
   const [
     postImageResolutionConversion,
     { data: imagesResolution, isSuccess: isSuccessImagesResolution }
@@ -56,10 +62,14 @@ const UploadWrapper: React.FC = () => {
     if (isSuccessImagesResolution) {
       dispatch(setImagesResolution(imagesResolution));
       dispatch(increaseCurrentSteps());
+      dispatch(setIsLoadingSteps(false));
     }
   }, [dispatch, imagesResolution, isSuccessImagesResolution]);
   const { mobile, tablet, desktop } = useSelector(selectOptions);
+
   const handlePreview = async (file: UploadFile) => {
+    dispatch(setIsLoadingSteps(true));
+
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as FileType);
     }
@@ -75,14 +85,18 @@ const UploadWrapper: React.FC = () => {
   );
 
   const beforeUpload = async (file: FileType) => {
+    dispatch(setIsLoadingSteps(true));
+
     const isImage = file.type.startsWith('image/');
     if (!isImage) {
+      dispatch(setIsLoadingSteps(false));
       message.error('You can only upload image files!');
       return false;
     }
 
     const isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
+      dispatch(setIsLoadingSteps(false));
       message.error('Image must be smaller than 10MB!');
       return false;
     }
@@ -93,6 +107,7 @@ const UploadWrapper: React.FC = () => {
     });
 
     if (error || !data?.presignedUrl) {
+      dispatch(setIsLoadingSteps(false));
       message.error('File upload failed.');
       return false;
     }
@@ -114,6 +129,7 @@ const UploadWrapper: React.FC = () => {
   };
 
   const customRequest = async (options: RcCustomRequestOptions) => {
+    dispatch(setIsLoadingSteps(true));
     const { file, onSuccess, onError } = options;
 
     try {
@@ -134,6 +150,7 @@ const UploadWrapper: React.FC = () => {
         throw new Error('Upload failed');
       }
     } catch (error) {
+      dispatch(setIsLoadingSteps(false));
       if (onError) onError(error as ProgressEvent);
       message.error('File upload failed.');
     }
@@ -146,52 +163,54 @@ const UploadWrapper: React.FC = () => {
       }}
       gap={20}
     >
-      <Dragger
-        style={{
-          marginBottom: 10
-        }}
-        customRequest={customRequest}
-        beforeUpload={beforeUpload}
-        listType="picture-card"
-        fileList={fileList}
-        onPreview={handlePreview}
-        onChange={handleChange}
-        height={300}
-        multiple
-        accept={'image/*'}
-        method="PUT"
-      >
-        <Flex
+      <Spin spinning={isLoadingSteps}>
+        <Dragger
           style={{
-            flexDirection: 'column',
-            width: '100%'
+            marginBottom: 10
           }}
+          customRequest={customRequest}
+          beforeUpload={beforeUpload}
+          listType="picture-card"
+          fileList={fileList}
+          onPreview={handlePreview}
+          onChange={handleChange}
+          height={300}
+          multiple
+          accept={'image/*'}
+          method="PUT"
         >
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-          <p className="ant-upload-text">
-            <Text style={TextStyle}>Click</Text> or{' '}
-            <Text style={TextStyle}>drag file</Text> to this area to upload
-          </p>
-          <p className="ant-upload-hint">
-            Support for a single or bulk upload. Strictly prohibited from
-            uploading company data or other banned files.
-          </p>
-        </Flex>
-      </Dragger>
-      {previewImage && (
-        <Image
-          alt={previewImage}
-          wrapperStyle={{ display: 'none' }}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage('')
-          }}
-          src={previewImage}
-        />
-      )}
+          <Flex
+            style={{
+              flexDirection: 'column',
+              width: '100%'
+            }}
+          >
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              <Text style={TextStyle}>Click</Text> or{' '}
+              <Text style={TextStyle}>drag file</Text> to this area to upload
+            </p>
+            <p className="ant-upload-hint">
+              Support for a single or bulk upload. Strictly prohibited from
+              uploading company data or other banned files.
+            </p>
+          </Flex>
+        </Dragger>
+        {previewImage && (
+          <Image
+            alt={previewImage}
+            wrapperStyle={{ display: 'none' }}
+            preview={{
+              visible: previewOpen,
+              onVisibleChange: (visible) => setPreviewOpen(visible),
+              afterOpenChange: (visible) => !visible && setPreviewImage('')
+            }}
+            src={previewImage}
+          />
+        )}
+      </Spin>
     </Flex>
   );
 };

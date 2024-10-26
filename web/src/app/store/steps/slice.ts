@@ -4,11 +4,13 @@ import { RootState } from '@/app/store';
 export interface IState {
   steps: number;
   currentSteps: number;
+  isLoadingSteps: boolean;
 }
 
 const initialState: IState = {
   steps: 0,
-  currentSteps: 0
+  currentSteps: 0,
+  isLoadingSteps: false
 };
 
 export const stepsSlice = createSlice({
@@ -25,12 +27,21 @@ export const stepsSlice = createSlice({
     },
     setSteps: (state, { payload }: PayloadAction<number>) => {
       state.steps = payload;
-    }
+    },
+    setIsLoadingSteps(state, action: PayloadAction<boolean>) {
+      state.isLoadingSteps = action.payload;
+    },
+    resetSteps: () => initialState
   }
 });
 
-export const { increaseCurrentSteps, decreaseCurrentSteps, setSteps } =
-  stepsSlice.actions;
+export const {
+  increaseCurrentSteps,
+  decreaseCurrentSteps,
+  setSteps,
+  setIsLoadingSteps,
+  resetSteps
+} = stepsSlice.actions;
 
 export const selectSteps = createSelector(
   ({ steps }: RootState) => steps,
@@ -40,6 +51,11 @@ export const selectSteps = createSelector(
 export const selectCurrentSteps = createSelector(
   ({ steps }: RootState) => steps,
   ({ currentSteps }: IState) => currentSteps
+);
+
+export const selectIsLoadingSteps = createSelector(
+  ({ steps }: RootState) => steps,
+  ({ isLoadingSteps }: IState) => isLoadingSteps
 );
 
 export default stepsSlice.reducer;

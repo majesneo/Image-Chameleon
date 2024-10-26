@@ -15,11 +15,13 @@ export const imageResolutionSlice = createSlice({
   reducers: {
     setImagesResolution: (state, { payload }) => {
       state.imagesResolution = payload;
-    }
+    },
+    resetImageResolution: () => initialState
   }
 });
 
-export const { setImagesResolution } = imageResolutionSlice.actions;
+export const { setImagesResolution, resetImageResolution } =
+  imageResolutionSlice.actions;
 
 export const selectImagesResolution = createSelector(
   ({ imageResolution }: RootState) => imageResolution,

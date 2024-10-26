@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  InternalServerErrorException,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   FileUploadDto,
   FileUploadDtoResponse,
@@ -45,6 +53,7 @@ export class ApiGatewayController {
       );
     } catch (error) {
       console.error('Failed to send event:', error);
+      throw new InternalServerErrorException(`Failed to send event:`);
     }
   }
 }

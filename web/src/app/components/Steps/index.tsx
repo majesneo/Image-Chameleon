@@ -1,20 +1,43 @@
-import React, { FC, useCallback, useEffect } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { Button, Flex, message, Steps, theme } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   decreaseCurrentSteps,
   increaseCurrentSteps,
+  resetSteps,
   selectCurrentSteps,
+  selectIsLoadingSteps,
   selectSteps,
   setSteps
 } from '@/app/store/steps/slice';
 import { Step } from '@/app/components/Steps/stepsData';
+import {
+  resetImageResolution,
+  selectImagesResolution
+} from '@/app/store/imageResolutionConversion/slice';
+import useDownload from '@/app/hooks/useDownload';
+import { DownloadOutlined } from '@ant-design/icons';
 
 const StepsWrapper: FC<{ steps: Step[] }> = ({ steps }) => {
   const { token } = theme.useToken();
   const dispatch = useDispatch();
   const selectedSteps = useSelector(selectSteps);
   const currentSteps = useSelector(selectCurrentSteps);
+  const imagesResolution = useSelector(selectImagesResolution);
+  const isLoadingSteps = useSelector(selectIsLoadingSteps);
+
+  const { download } = useDownload();
+
+  const handleDownloadAll = () => {
+    if (!imagesResolution || imagesResolution.length === 0) {
+      message.warning('There are no available files to upload.');
+      return;
+    }
+
+    imagesResolution.forEach((url) => download(url));
+    message.success('The download of all files has begun.');
+  };
+
   useEffect(() => {
     dispatch(setSteps(steps.length - 1));
   }, []);
@@ -45,6 +68,16 @@ const StepsWrapper: FC<{ steps: Step[] }> = ({ steps }) => {
     padding: '1rem',
     height: 446
   };
+  const onClickResetSteps = () => {
+    dispatch(resetSteps());
+    dispatch(resetImageResolution());
+    dispatch(setSteps(steps.length - 1));
+  };
+
+  const isLastStep = useMemo(
+    () => currentSteps === selectedSteps && imagesResolution?.length > 0,
+    [currentSteps, imagesResolution?.length, selectedSteps]
+  );
 
   return (
     <Flex
@@ -58,22 +91,28 @@ const StepsWrapper: FC<{ steps: Step[] }> = ({ steps }) => {
       <Steps current={currentSteps} items={items} />
       <div style={contentStyle}>{steps[currentSteps].content}</div>
       <div style={{ marginTop: 24 }}>
-        {currentSteps < selectedSteps && (
+        {currentSteps < selectedSteps && !isLoadingSteps && (
           <Button type="primary" onClick={next}>
             Next
           </Button>
         )}
-        {currentSteps === selectedSteps && (
+        {isLastStep && (
           <Button
             type="primary"
-            onClick={() => message.success('Processing complete!')}
+            icon={<DownloadOutlined />}
+            onClick={handleDownloadAll}
           >
-            Done
+            Download all
           </Button>
         )}
-        {currentSteps > 0 && (
+        {currentSteps > 0 && !isLastStep && !isLoadingSteps && (
           <Button style={{ margin: '0 8px' }} onClick={prev}>
             Previous
+          </Button>
+        )}
+        {isLastStep && (
+          <Button style={{ margin: '0 8px' }} onClick={onClickResetSteps}>
+            Again
           </Button>
         )}
       </div>
